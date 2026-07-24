@@ -1,11 +1,27 @@
-# hush 🤫
+<h1 align="center">hush 🤫</h1>
 
-**A zero-dependency, git-aware secret scanner. Keep your keys hushed.**
+<p align="center"><em>A zero-dependency, git-aware secret scanner. Keep your keys hushed.</em></p>
+
+<p align="center">
+  <a href="https://pypi.org/project/hush-scan/"><img alt="PyPI" src="https://img.shields.io/pypi/v/hush-scan?color=blue&logo=pypi&logoColor=white"></a>
+  <a href="https://pypi.org/project/hush-scan/"><img alt="Python versions" src="https://img.shields.io/pypi/pyversions/hush-scan?logo=python&logoColor=white"></a>
+  <a href="https://github.com/netizen-labs/hush/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/netizen-labs/hush/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-green"></a>
+  <img alt="Zero dependencies" src="https://img.shields.io/badge/dependencies-0-brightgreen">
+  <img alt="Tests" src="https://img.shields.io/badge/tests-51%20passing-success?logo=pytest&logoColor=white">
+  <a href="https://pypi.org/project/hush-scan/"><img alt="Downloads" src="https://img.shields.io/pypi/dm/hush-scan?color=blueviolet"></a>
+  <img alt="Platforms" src="https://img.shields.io/badge/platform-linux%20%7C%20macos%20%7C%20windows-lightgrey">
+</p>
 
 `hush` finds leaked credentials — API keys, tokens, private keys — in your code,
 your **staged changes**, and your **git history**, before they end up in a public
 repo. It's a single pure-Python package with **no runtime dependencies**: nothing
 to compile, no supply chain to trust, `pip install` and go.
+
+> **The 30-second pitch:** every secret scanner promises this. `hush` does it in a
+> few hundred lines of standard-library Python you can actually read — no C
+> extensions, no transitive dependency tree, no "trust me." Clone it, understand
+> it, extend it in an afternoon.
 
 ```text
 CRITICAL src/config.py:12
@@ -39,6 +55,25 @@ makes a few deliberate trade-offs:
   the whole history (`--history`) to find secrets that were "removed" but are
   still sitting in old commits (and therefore still compromised).
 - **CI-friendly exit codes.** `0` clean, `1` secrets found, `2` error.
+
+### How it stacks up
+
+An honest comparison — the other tools are excellent and more battle-tested;
+`hush` optimises for a different sweet spot.
+
+| | hush | gitleaks | trufflehog | detect-secrets |
+| --- | :---: | :---: | :---: | :---: |
+| Runtime dependencies | **0** | Go binary | many | several |
+| Language | Python (stdlib) | Go | Python | Python |
+| Regex rules | ✅ | ✅ | ✅ | ✅ |
+| Entropy detection | ✅ | ✅ | ✅ | ✅ |
+| Scan git history | ✅ | ✅ | ✅ | ⚠️ |
+| Reviewable baseline | ✅ | ⚠️ | ❌ | ✅ |
+| Readable in an afternoon | ✅ | — | — | — |
+
+If you need the deepest coverage or live credential verification, reach for
+trufflehog. If you want a tiny, auditable, hackable scanner with sane defaults,
+that's `hush`.
 
 ## Install
 
@@ -196,3 +231,10 @@ pytest --cov=hush      # with coverage
 ## License
 
 MIT © Lucas Gabriel Ramos Aguiar. See [LICENSE](LICENSE).
+
+---
+
+<p align="center">
+  If <code>hush</code> caught a leak for you — or just made you smile — drop a ⭐ on the repo.<br>
+  <sub>Built with too much coffee and a healthy fear of committing secrets. 🤫</sub>
+</p>
