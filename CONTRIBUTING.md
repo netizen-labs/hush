@@ -5,7 +5,7 @@ Thanks for helping keep secrets hushed. Contributions are welcome.
 ## Setup
 
 ```bash
-git clone https://github.com/lucasgabriel/hush
+git clone https://github.com/netizen-labs/hush
 cd hush
 pip install -e ".[dev]"
 pytest

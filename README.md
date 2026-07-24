@@ -51,7 +51,7 @@ pip install hush-scan
 From source:
 
 ```bash
-git clone https://github.com/lucasgabriel/hush
+git clone https://github.com/netizen-labs/hush
 cd hush
 pip install -e .
 ```
@@ -84,7 +84,7 @@ committed — not your working tree. Wire it up automatically with
 ```yaml
 # .pre-commit-config.yaml
 repos:
-  - repo: https://github.com/lucasgabriel/hush
+  - repo: https://github.com/netizen-labs/hush
     rev: v0.1.0
     hooks:
       - id: hush
