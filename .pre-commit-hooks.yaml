@@ -1,0 +1,7 @@
+- id: hush
+  name: hush secret scan
+  description: Scan staged changes for leaked secrets before committing.
+  entry: hush scan --staged
+  language: python
+  pass_filenames: false
+  always_run: true

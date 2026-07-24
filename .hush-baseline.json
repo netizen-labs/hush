@@ -1,0 +1,159 @@
+{
+  "version": 1,
+  "findings": [
+    {
+      "fingerprint": "e85a7151d6ce1a8e",
+      "rule_id": "private-key-block",
+      "source": "tests\\test_rules.py",
+      "line": 49,
+      "secret": "----***********************----"
+    },
+    {
+      "fingerprint": "1889b658d71eceaa",
+      "rule_id": "high-entropy-string",
+      "source": "src\\hush\\entropy.py",
+      "line": 17,
+      "secret": "ABCD***********************************************************/=-_"
+    },
+    {
+      "fingerprint": "4d578a1de6fa77ba",
+      "rule_id": "high-entropy-string",
+      "source": "src\\hush\\entropy.py",
+      "line": 18,
+      "secret": "1234**************CDEF"
+    },
+    {
+      "fingerprint": "1fb16a3308c27aa1",
+      "rule_id": "high-entropy-string",
+      "source": "src\\hush\\entropy.py",
+      "line": 68,
+      "secret": "is_h*************************************************EKEY"
+    },
+    {
+      "fingerprint": "e7d34ffef4d99dbe",
+      "rule_id": "high-entropy-string",
+      "source": "src\\hush\\rules.py",
+      "line": 73,
+      "secret": "rege******************************************,255"
+    },
+    {
+      "fingerprint": "230b47a6f1e3c168",
+      "rule_id": "high-entropy-string",
+      "source": "src\\hush\\rules.py",
+      "line": 87,
+      "secret": "rege*******************************************0,48"
+    },
+    {
+      "fingerprint": "c23669912f87a466",
+      "rule_id": "high-entropy-string",
+      "source": "src\\hush\\rules.py",
+      "line": 156,
+      "secret": "rege******************************]{32"
+    },
+    {
+      "fingerprint": "46799cca98ffb987",
+      "rule_id": "high-entropy-string",
+      "source": "src\\hush\\rules.py",
+      "line": 163,
+      "secret": "rege*****************************************************]{43"
+    },
+    {
+      "fingerprint": "7b326d86c0b77250",
+      "rule_id": "generic-assignment",
+      "source": "tests\\test_baseline.py",
+      "line": 8,
+      "secret": "ghpS**********0000"
+    },
+    {
+      "fingerprint": "314df058843be32b",
+      "rule_id": "generic-assignment",
+      "source": "tests\\test_baseline.py",
+      "line": 19,
+      "secret": "NEW-************-XYZ"
+    },
+    {
+      "fingerprint": "073abf64b1a8aba1",
+      "rule_id": "high-entropy-string",
+      "source": "tests\\test_baseline.py",
+      "line": 19,
+      "secret": "_fin*****************************-XYZ"
+    },
+    {
+      "fingerprint": "ce54e14d39cfe4fc",
+      "rule_id": "generic-assignment",
+      "source": "tests\\test_baseline.py",
+      "line": 20,
+      "secret": "OLD-**********ALUE"
+    },
+    {
+      "fingerprint": "f84ef277fb26c26a",
+      "rule_id": "generic-assignment",
+      "source": "tests\\test_baseline.py",
+      "line": 27,
+      "secret": "AAAA********2222"
+    },
+    {
+      "fingerprint": "da8d36d5b1b08f79",
+      "rule_id": "generic-assignment",
+      "source": "tests\\test_baseline.py",
+      "line": 27,
+      "secret": "CCCC********4444"
+    },
+    {
+      "fingerprint": "92b323eea8c75a18",
+      "rule_id": "generic-assignment",
+      "source": "tests\\test_baseline.py",
+      "line": 37,
+      "secret": "SUPE*************2345"
+    },
+    {
+      "fingerprint": "3b811ec37a9ab73a",
+      "rule_id": "high-entropy-string",
+      "source": "tests\\test_entropy.py",
+      "line": 35,
+      "secret": "is_h*************************************************EKEY"
+    },
+    {
+      "fingerprint": "c0fad4568f3e177e",
+      "rule_id": "high-entropy-string",
+      "source": "tests\\test_entropy.py",
+      "line": 43,
+      "secret": "is_h*****************************************427e"
+    },
+    {
+      "fingerprint": "e87e00c73083bd00",
+      "rule_id": "high-entropy-string",
+      "source": "tests\\test_rules.py",
+      "line": 33,
+      "secret": "0123************ABCD"
+    },
+    {
+      "fingerprint": "0f2158e082f84a3a",
+      "rule_id": "high-entropy-string",
+      "source": "tests\\test_rules.py",
+      "line": 38,
+      "secret": "1234*************ghij"
+    },
+    {
+      "fingerprint": "ef7ab2f90968c8ae",
+      "rule_id": "generic-assignment",
+      "source": "tests\\test_rules.py",
+      "line": 63,
+      "secret": "Xk9L***************c6Yd"
+    },
+    {
+      "fingerprint": "896bbbc3084f162b",
+      "rule_id": "high-entropy-string",
+      "source": "tests\\test_scanner.py",
+      "line": 46,
+      "secret": "conf*********************************f3Gh"
+    },
+    {
+      "fingerprint": "6623d7180cb337bd",
+      "rule_id": "high-entropy-string",
+      "source": "tests\\test_scanner.py",
+      "line": 54,
+      "secret": "aB3x****************************2kL9"
+    }
+  ]
+}
