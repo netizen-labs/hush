@@ -35,6 +35,12 @@ DEFAULT_SKIP_DIRS = frozenset(
     }
 )
 
+# Files skipped by name at any depth. The baseline is hush's own output — it
+# stores paths and redacted values that can themselves look secret-ish (a random
+# temp path, a high-entropy fingerprint), so scanning it would flag the tool's
+# own metadata. Never scan it.
+DEFAULT_SKIP_FILES = frozenset({".hush-baseline.json"})
+
 # The rule id used when a finding comes purely from the entropy detector.
 ENTROPY_RULE_ID = "high-entropy-string"
 
@@ -110,6 +116,7 @@ class Scanner:
         use_entropy: bool = True,
         min_severity: str = "low",
         skip_dirs: Iterable[str] = DEFAULT_SKIP_DIRS,
+        skip_files: Iterable[str] = DEFAULT_SKIP_FILES,
     ) -> None:
         self.rules = tuple(rules if rules is not None else DEFAULT_RULES)
         self.use_entropy = use_entropy
@@ -117,6 +124,7 @@ class Scanner:
             raise ValueError(f"unknown severity: {min_severity!r}")
         self.min_severity = min_severity
         self.skip_dirs = frozenset(skip_dirs)
+        self.skip_files = frozenset(skip_files)
 
     # -- text ---------------------------------------------------------------
 
@@ -221,6 +229,8 @@ class Scanner:
             # In-place filter prunes os.walk's descent into skipped dirs.
             dirnames[:] = [d for d in dirnames if d not in self.skip_dirs]
             for name in filenames:
+                if name in self.skip_files:
+                    continue
                 findings.extend(self.scan_file(Path(dirpath) / name))
         return findings
 

@@ -81,6 +81,19 @@ def test_scan_missing_file_is_silent():
     assert Scanner().scan_file("does-not-exist-xyz.py") == []
 
 
+def test_scan_path_skips_baseline_file(tmp_path: Path):
+    # Regression: on macOS the temp dir carries a high-entropy random segment
+    # (/var/folders/xx/<random>/T/...). A baseline stores that path in its
+    # "source" field, so re-scanning the baseline flagged it as a secret,
+    # breaking baseline suppression. The baseline file must never be scanned.
+    (tmp_path / ".hush-baseline.json").write_text(
+        '{"version": 1, "findings": [{"fingerprint": "a1b2c3d4e5f6a7b8",'
+        ' "source": "/var/folders/q8/n5kd0f9s2h4j1kL9pQ7xZ/T/x/config.py"}]}'
+    )
+    (tmp_path / "app.py").write_text("print('hello')\n")
+    assert Scanner().scan_path(tmp_path) == []
+
+
 def test_sort_findings_orders_by_severity():
     low = Finding("r", "d", "low", "a", 1, "x", 1.0)
     crit = Finding("r", "d", "critical", "a", 2, "y", 1.0)
