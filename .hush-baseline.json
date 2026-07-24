@@ -154,6 +154,13 @@
       "source": "tests/test_scanner.py",
       "line": 54,
       "secret": "aB3x****************************2kL9"
+    },
+    {
+      "fingerprint": "ecf3f5d8821e358d",
+      "rule_id": "high-entropy-string",
+      "source": "tests/test_scanner.py",
+      "line": 91,
+      "secret": "/var*******************************************g.py"
     }
   ]
 }
