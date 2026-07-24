@@ -205,7 +205,10 @@ class Scanner:
             text = raw.decode("utf-8")
         except UnicodeDecodeError:
             text = raw.decode("latin-1", errors="replace")
-        return self.scan_text(text, source=str(p))
+        # Normalise to forward slashes so a finding's fingerprint (which includes
+        # the source path) is identical whether scanned on Windows or POSIX —
+        # otherwise a baseline generated on one OS won't match on another.
+        return self.scan_text(text, source=p.as_posix())
 
     def scan_path(self, root: str | os.PathLike[str]) -> list[Finding]:
         """Scan a file or recurse a directory, pruning :attr:`skip_dirs`."""
