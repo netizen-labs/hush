@@ -9,7 +9,7 @@ description = "Zero-dependency, git-aware secret scanner. Keep your keys hushed.
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
-authors = [{ name = "Lucas Gabriel Ramos Aguiar" }]
+authors = [{ name = "Lucas Gabriel" }]
 keywords = [
     "security",
     "secrets",

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>hush — zero-dependency secret scanner</title>
+<meta name="description" content="hush finds leaked API keys, tokens and private keys in your code, staged changes and git history. Zero-dependency, pure-Python, git-aware.">
+<meta property="og:title" content="hush 🤫 — zero-dependency secret scanner">
+<meta property="og:description" content="Catch leaked credentials before they hit GitHub. Pure-Python, no dependencies, git-native.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤫</text></svg>">
+<style>
+  :root {
+    --bg: #0b0e14;
+    --bg-soft: #11151f;
+    --card: #151a26;
+    --border: #232a3a;
+    --fg: #e6e9ef;
+    --fg-dim: #9aa4b8;
+    --accent: #5eead4;
+    --accent-2: #818cf8;
+    --crit: #f87171;
+    --high: #fb923c;
+    --med: #fbbf24;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  [data-theme="light"] {
+    --bg: #f7f8fa;
+    --bg-soft: #ffffff;
+    --card: #ffffff;
+    --border: #e2e6ee;
+    --fg: #1a1f2b;
+    --fg-dim: #5a6478;
+    --accent: #0d9488;
+    --accent-2: #4f46e5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+  /* nav */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 24px; max-width: 960px; margin: 0 auto;
+  }
+  nav .brand { font-weight: 700; font-size: 1.25rem; }
+  nav .links { display: flex; gap: 20px; align-items: center; }
+  nav .links a { color: var(--fg-dim); font-size: 0.95rem; }
+  nav .links a:hover { color: var(--fg); text-decoration: none; }
+  .theme-btn {
+    background: var(--card); border: 1px solid var(--border); color: var(--fg);
+    border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 1rem;
+  }
+
+  /* hero */
+  .hero { text-align: center; padding: 60px 0 40px; }
+  .hero h1 { font-size: clamp(2.8rem, 8vw, 4.5rem); letter-spacing: -0.03em; margin-bottom: 8px; }
+  .hero .tag { font-size: clamp(1.1rem, 3vw, 1.4rem); color: var(--fg-dim); margin-bottom: 28px; }
+  .hero .tag strong { color: var(--accent); font-weight: 600; }
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 32px; }
+  .badge {
+    font-family: var(--mono); font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;
+    background: var(--card); border: 1px solid var(--border); color: var(--fg-dim);
+  }
+  .badge b { color: var(--accent); }
+  .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    padding: 12px 22px; border-radius: 10px; font-weight: 600; font-size: 0.98rem;
+    border: 1px solid transparent; cursor: pointer; transition: transform .08s ease, opacity .2s;
+  }
+  .btn:hover { transform: translateY(-1px); text-decoration: none; }
+  .btn-primary { background: var(--accent); color: #04140f; }
+  .btn-ghost { background: transparent; border-color: var(--border); color: var(--fg); }
+
+  /* install pill */
+  .install {
+    display: inline-flex; align-items: center; gap: 14px; margin: 32px auto 0;
+    background: var(--bg-soft); border: 1px solid var(--border); border-radius: 12px;
+    padding: 12px 16px; font-family: var(--mono); font-size: 0.95rem;
+  }
+  .install .prompt { color: var(--accent-2); user-select: none; }
+  .install code { color: var(--fg); }
+  .copy-btn {
+    background: var(--card); border: 1px solid var(--border); color: var(--fg-dim);
+    border-radius: 7px; padding: 5px 10px; cursor: pointer; font-size: 0.8rem; font-family: var(--sans);
+  }
+  .copy-btn:hover { color: var(--fg); }
+
+  /* terminal */
+  .terminal {
+    background: #06080d; border: 1px solid var(--border); border-radius: 14px;
+    overflow: hidden; margin: 48px 0; box-shadow: 0 20px 60px -20px rgba(0,0,0,.6);
+  }
+  .term-bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: #0d1017; border-bottom: 1px solid var(--border); }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot.r { background: #ff5f56; } .dot.y { background: #ffbd2e; } .dot.g { background: #27c93f; }
+  .term-title { margin-left: 8px; color: #667; font-family: var(--mono); font-size: 0.8rem; }
+  .term-body { padding: 20px; font-family: var(--mono); font-size: 0.86rem; line-height: 1.7; overflow-x: auto; color: #cdd3e0; }
+  .term-body .cmd { color: #7dd3fc; }
+  .term-body .crit { color: var(--crit); font-weight: 700; }
+  .term-body .high { color: var(--high); font-weight: 700; }
+  .term-body .med { color: var(--med); font-weight: 700; }
+  .term-body .dim { color: #667; }
+  .term-body .ok { color: #34d399; }
+
+  /* sections */
+  section { padding: 40px 0; }
+  h2 { font-size: 1.9rem; letter-spacing: -0.02em; margin-bottom: 6px; text-align: center; }
+  .sub { text-align: center; color: var(--fg-dim); margin-bottom: 36px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px;
+    transition: transform .12s ease, border-color .2s;
+  }
+  .card:hover { transform: translateY(-3px); border-color: var(--accent); }
+  .card .ic { font-size: 1.6rem; margin-bottom: 10px; }
+  .card h3 { font-size: 1.1rem; margin-bottom: 6px; }
+  .card p { color: var(--fg-dim); font-size: 0.92rem; }
+
+  /* comparison */
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  th, td { padding: 12px 10px; text-align: center; border-bottom: 1px solid var(--border); }
+  th:first-child, td:first-child { text-align: left; color: var(--fg-dim); }
+  thead th { color: var(--fg); }
+  thead th.us { color: var(--accent); }
+  .tbl-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 14px; background: var(--card); }
+
+  /* code block */
+  pre.block {
+    background: #06080d; border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 20px; overflow-x: auto; font-family: var(--mono); font-size: 0.86rem; color: #cdd3e0;
+  }
+  pre.block .c { color: #667; }
+  pre.block .k { color: #c792ea; }
+  pre.block .s { color: #7dd3fc; }
+
+  footer { text-align: center; padding: 50px 0 40px; color: var(--fg-dim); font-size: 0.9rem; border-top: 1px solid var(--border); margin-top: 40px; }
+  footer .heart { color: var(--crit); }
+  .center { text-align: center; }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="brand">hush 🤫</span>
+  <span class="links">
+    <a href="#features">Features</a>
+    <a href="#compare">Compare</a>
+    <a href="#install">Install</a>
+    <a href="https://github.com/netizen-labs/hush">GitHub</a>
+    <button class="theme-btn" id="theme" aria-label="Toggle theme">🌙</button>
+  </span>
+</nav>
+
+<header class="hero wrap">
+  <h1>hush</h1>
+  <p class="tag">A <strong>zero-dependency</strong>, git-aware secret scanner.<br>Keep your keys hushed.</p>
+
+  <div class="badges">
+    <span class="badge">dependencies · <b>0</b></span>
+    <span class="badge">pure <b>Python</b> stdlib</span>
+    <span class="badge"><b>51</b> tests passing</span>
+    <span class="badge">Python <b>3.9+</b></span>
+    <span class="badge">MIT licensed</span>
+  </div>
+
+  <div class="cta">
+    <a class="btn btn-primary" href="#install">Get started</a>
+    <a class="btn btn-ghost" href="https://github.com/netizen-labs/hush">★ Star on GitHub</a>
+  </div>
+
+  <div class="install">
+    <span class="prompt">$</span>
+    <code id="pip-cmd">pip install hush-scan</code>
+    <button class="copy-btn" data-copy="pip install hush-scan">Copy</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="terminal">
+    <div class="term-bar">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="term-title">hush scan</span>
+    </div>
+    <div class="term-body">
+<span class="cmd">$ hush scan</span>
+
+<span class="crit">CRITICAL</span> src/config.py:12
+         AWS Access Key ID <span class="dim">[aws-access-key-id]</span>
+         AKIA****************  <span class="dim">(entropy 3.68)</span>
+
+<span class="crit">CRITICAL</span> src/config.py:13
+         GitHub Personal Access Token <span class="dim">[github-token]</span>
+         ghp_****************************aaaa  <span class="dim">(entropy 4.90)</span>
+
+<span class="high">HIGH</span>     .env:4
+         OpenAI API Key <span class="dim">[openai-api-key]</span>
+         sk-p****************************3xQz  <span class="dim">(entropy 5.02)</span>
+
+Found <b>3</b> potential secret(s): 2 critical, 1 high
+<span class="dim">exit code 1</span>
+    </div>
+  </div>
+</div>
+
+<section id="features" class="wrap">
+  <h2>Why hush</h2>
+  <p class="sub">Small enough to read. Serious enough to trust.</p>
+  <div class="grid">
+    <div class="card">
+      <div class="ic">📦</div>
+      <h3>Zero dependencies</h3>
+      <p>Pure standard-library Python — a few hundred readable lines. No C extensions, no transitive tree, no supply chain to trust.</p>
+    </div>
+    <div class="card">
+      <div class="ic">🎯</div>
+      <h3>Two detectors</h3>
+      <p>Curated regex rules for known secret shapes, plus a Shannon-entropy detector for the random blobs no pattern knows. Deduplicated, never doubled.</p>
+    </div>
+    <div class="card">
+      <div class="ic">🌿</div>
+      <h3>Git-native</h3>
+      <p>Scan the index as a pre-commit gate, or sweep the whole history to find secrets that were "removed" but still live in old commits.</p>
+    </div>
+    <div class="card">
+      <div class="ic">📋</div>
+      <h3>Reviewable baselines</h3>
+      <p>Accept known findings into a baseline that stores fingerprints and <em>redacted</em> context — never a raw secret. Only new leaks get reported.</p>
+    </div>
+    <div class="card">
+      <div class="ic">🔒</div>
+      <h3>Safe by default</h3>
+      <p>Secrets are redacted in every report unless you explicitly ask to reveal them. Nothing leaks through the tool meant to stop leaks.</p>
+    </div>
+    <div class="card">
+      <div class="ic">⚙️</div>
+      <h3>CI-ready</h3>
+      <p>Clean exit codes (0/1/2), JSON output, a pre-commit hook, and a GitHub Actions workflow. Drop it into any pipeline in minutes.</p>
+    </div>
+  </div>
+</section>
+
+<section id="compare" class="wrap">
+  <h2>How it stacks up</h2>
+  <p class="sub">Honest trade-offs — the others are more battle-tested; hush optimises for a different sweet spot.</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr><th></th><th class="us">hush</th><th>gitleaks</th><th>trufflehog</th><th>detect-secrets</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Runtime dependencies</td><td class="us"><b>0</b></td><td>Go binary</td><td>many</td><td>several</td></tr>
+        <tr><td>Language</td><td class="us">Python (stdlib)</td><td>Go</td><td>Python</td><td>Python</td></tr>
+        <tr><td>Regex rules</td><td class="us">✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>Entropy detection</td><td class="us">✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>Scan git history</td><td class="us">✅</td><td>✅</td><td>✅</td><td>⚠️</td></tr>
+        <tr><td>Reviewable baseline</td><td class="us">✅</td><td>⚠️</td><td>❌</td><td>✅</td></tr>
+        <tr><td>Readable in an afternoon</td><td class="us">✅</td><td>—</td><td>—</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="install" class="wrap">
+  <h2>Get started</h2>
+  <p class="sub">Three commands to a safer repo.</p>
+  <pre class="block"><span class="c"># install</span>
+pip install hush-scan
+
+<span class="c"># scan the current directory</span>
+hush scan
+
+<span class="c"># gate every commit (reads the git index)</span>
+hush scan --staged
+
+<span class="c"># audit history for secrets that were "removed"</span>
+hush scan --history</pre>
+
+  <p style="margin-top:24px" class="center">Or wire it into <a href="https://pre-commit.com">pre-commit</a>:</p>
+  <pre class="block"><span class="c"># .pre-commit-config.yaml</span>
+<span class="k">repos:</span>
+  - <span class="k">repo:</span> <span class="s">https://github.com/netizen-labs/hush</span>
+    <span class="k">rev:</span> <span class="s">v0.1.0</span>
+    <span class="k">hooks:</span>
+      - <span class="k">id:</span> <span class="s">hush</span></pre>
+</section>
+
+<section class="wrap center">
+  <div class="card" style="max-width:640px;margin:0 auto;">
+    <p style="color:var(--fg-dim)">🤫 hush is a safety net, not a vault. A clean scan is not a guarantee — and if a secret has ever been committed, <strong style="color:var(--fg)">rotate it</strong>. Deletion doesn't un-leak it.</p>
+  </div>
+</section>
+
+<footer>
+  <p><a href="https://github.com/netizen-labs/hush">GitHub</a> &nbsp;·&nbsp; <a href="https://pypi.org/project/hush-scan/">PyPI</a> &nbsp;·&nbsp; <a href="https://github.com/netizen-labs/hush/blob/main/LICENSE">MIT</a></p>
+  <p style="margin-top:12px">Built with too much coffee and a healthy fear of committing secrets. <span class="heart">🤫</span></p>
+  <p style="margin-top:4px">© 2026 Lucas Gabriel · NitWare Studios</p>
+</footer>
+
+<script>
+  // Theme toggle (persisted)
+  const root = document.documentElement;
+  const btn = document.getElementById('theme');
+  const saved = localStorage.getItem('hush-theme');
+  if (saved) root.setAttribute('data-theme', saved);
+  const sync = () => btn.textContent = root.getAttribute('data-theme') === 'dark' ? '🌙' : '☀️';
+  sync();
+  btn.addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('hush-theme', next);
+    sync();
+  });
+
+  // Copy buttons
+  document.querySelectorAll('.copy-btn').forEach(b => {
+    b.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(b.dataset.copy);
+        const t = b.textContent; b.textContent = 'Copied!';
+        setTimeout(() => b.textContent = t, 1400);
+      } catch (e) { /* clipboard blocked; no-op */ }
+    });
+  });
+</script>
+</body>
+</html>

@@ -77,7 +77,7 @@ that's `hush`.
 
 ## Install
 
-From PyPI (once published):
+From PyPI:
 
 ```bash
 pip install hush-scan
@@ -230,7 +230,7 @@ pytest --cov=hush      # with coverage
 
 ## License
 
-MIT © Lucas Gabriel Ramos Aguiar. See [LICENSE](LICENSE).
+MIT © Lucas Gabriel. See [LICENSE](LICENSE).
 
 ---
 
